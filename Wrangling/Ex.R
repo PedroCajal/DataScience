@@ -3,6 +3,8 @@ library(ggplot2)
 library(dplyr)
 library(dslabs)
 library(Lahman)
+library(rvest)
+
 #path <- system.file("extdata", package = "dslabs")
 
 #list.files(path)
@@ -85,19 +87,19 @@ library(Lahman)
 
 #tmp2 <- unite(tmp, column_name, c(key, gender))
 
-data(murders)
+#data(murders)
 
-head(murders)
+#head(murders)
 
-data("polls_us_election_2016")
+#data("polls_us_election_2016")
 
-head(results_us_election_2016)
+#head(results_us_election_2016)
 
-identical(results_us_election_2016$state, murders$state)
+#identical(results_us_election_2016$state, murders$state)
 
-tab <- left_join(murders, results_us_election_2016, by = "state")
+#tab <- left_join(murders, results_us_election_2016, by = "state")
 
-head(tab)
+#head(tab)
 
 #tab %>% ggplot(aes(population/10^6, electoral_votes, label = abb)) +
 #  geom_point()  +
@@ -107,38 +109,38 @@ head(tab)
 #  geom_smooth(method = "lm", se = FALSE)
 
 
-tab1 <- slice(murders, 1:6) %>% select(state, population)
+#tab1 <- slice(murders, 1:6) %>% select(state, population)
 
-tab1
+#tab1
 
-tab2 <- slice(results_us_election_2016, c(22, 44, 14, 1, 27, 45)) %>% select(state, electoral_votes)
+#tab2 <- slice(results_us_election_2016, c(22, 44, 14, 1, 27, 45)) %>% select(state, electoral_votes)
 
-tab2
+#tab2
 
-semi_join(tab1, tab2)
+#semi_join(tab1, tab2)
 
-bind_cols(a = c(1:3), b = c(4:6))
+#bind_cols(a = c(1:3), b = c(4:6))
 
-head(tab)
+#head(tab)
 
-tab1 <- tab[, 1:3]
-tab2 <- tab[, 4:6]
-tab3 <- tab[, 7:9]
+#tab1 <- tab[, 1:3]
+#tab2 <- tab[, 4:6]
+#tab3 <- tab[, 7:9]
 
-new_tab <- bind_cols(tab1, tab2, tab3)
+#new_tab <- bind_cols(tab1, tab2, tab3)
 
-head(new_tab)
+#head(new_tab)
 
-tab1 <- tab[1:2,]
-tab2 <- tab[3:4,]
+#tab1 <- tab[1:2,]
+#tab2 <- tab[3:4,]
 
-bind_rows(tab1, tab2)
+#bind_rows(tab1, tab2)
 
-tab1 <- tab[1:5,]
-tab2 <- tab[3:7,]
+#tab1 <- tab[1:5,]
+#tab2 <- tab[3:7,]
 
-tab1
-tab2
+#tab1
+#tab2
 
 #intersect(tab1, tab2)
 
@@ -152,38 +154,87 @@ tab2
 
 
 
-tab1 <- slice(murders, c(1:3, 8, 9)) %>% select(state, population)
+#tab1 <- slice(murders, c(1:3, 8, 9)) %>% select(state, population)
 
-tab1
+#tab1
 
-tab2 <- slice(results_us_election_2016, c(22, 44, 14, 1, 23, 27)) %>% select(state, electoral_votes)
+#tab2 <- slice(results_us_election_2016, c(22, 44, 14, 1, 23, 27)) %>% select(state, electoral_votes)
 
-tab2
-
-
-dim(tab1)
-
-dim(tab2)
+#tab2
 
 
-datata <- semi_join(tab1, tab2)
+#dim(tab1)
 
-datata
+#dim(tab2)
 
 
-top <- Batting %>% 
-  filter(yearID == 2016) %>%
-  arrange(desc(HR)) %>%    # arrange by descending HR count
-  slice(1:10)    # take entries 1-10
-top %>% as_tibble()
+#datata <- semi_join(tab1, tab2)
 
-top_names <- top %>% left_join(People)  %>%
-  select(playerID, nameFirst, nameLast, HR)
+#datata
 
-top_salary <- Salaries %>% filter(yearID == 2016) %>%
-  right_join(top_names) %>% select(nameFirst, nameLast, teamID, HR, salary)
 
-AwardsPlayers %>% filter(yearID==2016) %>% inner_join(top)
+#top <- Batting %>% 
+#  filter(yearID == 2016) %>%
+#  arrange(desc(HR)) %>%    # arrange by descending HR count
+#  slice(1:10)    # take entries 1-10
+#top %>% as_tibble()
 
-AwardsPlayers %>% filter(yearID==2016) %>% anti_join(top) %>% distinct(playerID, keep_all = TRUE)
+#top_names <- top %>% left_join(People)  %>%
+#  select(playerID, nameFirst, nameLast, HR)
+
+#top_salary <- Salaries %>% filter(yearID == 2016) %>%
+#  right_join(top_names) %>% select(nameFirst, nameLast, teamID, HR, salary)
+
+#AwardsPlayers %>% filter(yearID==2016) %>% inner_join(top)
+
+#AwardsPlayers %>% filter(yearID==2016) %>% anti_join(top) %>% distinct(playerID, keep_all = TRUE)
+
+#url <- "https://en.wikipedia.org/wiki/Murder_in_the_United_States_by_state"
+#h <- read_html(url)
+#class(h)
+#h
+
+#tab <- h %>% html_nodes("table")
+#tab <- tab[[2]]
+
+#tab <- tab %>% html_table()
+
+#class(tab)
+
+#tab <- tab %>% setNames(c("state", "population", "total", "murders", "gun_murders", "gun_ownership", "total_rate", "murder_rate", "gun_murder_rate"))
+
+#head(tab)
+
+url <- "https://web.archive.org/web/20181024132313/http://www.stevetheump.com/Payrolls.htm"
+h <- read_html(url)
+
+nodes <- html_nodes(h, "table")
+
+html_text(nodes[[8]])
+
+html_table(nodes[[8]])
+
+tab1 <- html_table(nodes[[10]])
+
+tab2 <- html_table(nodes[[19]])
+
+tab_1 <- tab1[-1, -1]
+tab_2 <- tab2[-1, ]
+
+colnames(tab_1) <- c("Team", "Payroll", "Average")
+colnames(tab_2) <- c("Team", "Payroll", "Average")
+
+joined_tab <- full_join(tab_1, tab_2, by = "Team")
+
+num_rows <- nrow(joined_tab)
+
+print(num_rows)
+
+url2 <- "https://web.archive.org/web/20210606000626/https://en.wikipedia.org/w/index.php?title=Opinion_polling_for_the_United_Kingdom_European_Union_membership_referendum&oldid=896735054"
+
+h2 <- read_html(url2)
+
+nodes2 <- html_nodes(h2, "table")
+
+html_table(nodes2)
 
